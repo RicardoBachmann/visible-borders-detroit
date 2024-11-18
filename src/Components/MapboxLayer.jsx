@@ -31,5 +31,4 @@ export default function MapboxLayer() {
 const MapContainer = styled.div`
   height: 100%;
   width: 100%;
-  background-color: lightgrey;
 `;
