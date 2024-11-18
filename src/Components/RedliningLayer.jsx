@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import geojsonData from "../assets/geojson/Redlining_spatial_data.json";
 
-console.log(geojsonData);
-
 export default function RedliningLayer({ map }) {
   useEffect(() => {
     if (!map) return;
@@ -19,7 +17,20 @@ export default function RedliningLayer({ map }) {
           type: "fill",
           source: "redlining",
           paint: {
-            "fill-color": "#00ffff",
+            "fill-color": [
+              "match",
+              ["get", "grade"],
+              "A",
+              "#76a865",
+              "B",
+              "#2b49e0",
+              "C",
+              "#f2d233",
+              "D",
+              "#e63946",
+              "#cccccc",
+            ],
+            "fill-opacity": 0.7,
           },
         });
       }
