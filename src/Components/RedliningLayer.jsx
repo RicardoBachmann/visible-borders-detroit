@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import geojsonData from "../assets/geojson/Redlining_spatial_data.json";
 import styled from "styled-components";
 
 export default function RedliningLayer({ map }) {
+  const [gradeFilter, setGradeFilter] = useState(null); // displays all areas
   useEffect(() => {
     if (!map) return;
 
@@ -53,14 +54,31 @@ export default function RedliningLayer({ map }) {
     };
   }, [map]);
 
+  useEffect(() => {
+    if (!map || !map.getLayer("redlining-layer")) return;
+    if (gradeFilter) {
+      map.setFilter("redlining-layer", ["==", ["get", "grade"], gradeFilter]);
+    } else {
+      map.setFilter("redlining-layer", null);
+    }
+  }, [map, gradeFilter]);
+
+  const handleFilter = (grade) => {
+    setGradeFilter((prev) => (prev === grade ? null : grade));
+  };
+
   return (
     <>
       <LegendContainer>
         <h3>Residential Security Map,1939 (LEGEND)</h3>
-        <ButtonItem>A: Best</ButtonItem>
-        <ButtonItem>B: Still Desirable</ButtonItem>
-        <ButtonItem>C: Definitly Declining</ButtonItem>
-        <ButtonItem>D: Hazardous</ButtonItem>
+        <ButtonItem onClick={() => handleFilter("A")}>A: Best</ButtonItem>
+        <ButtonItem onClick={() => handleFilter("B")}>
+          B: Still Desirable
+        </ButtonItem>
+        <ButtonItem onClick={() => handleFilter("C")}>
+          C: Definitly Declining
+        </ButtonItem>
+        <ButtonItem onClick={() => handleFilter("D")}>D: Hazardous</ButtonItem>
       </LegendContainer>
     </>
   );
