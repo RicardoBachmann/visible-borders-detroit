@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import geojsonData from "../assets/geojson/Redlining_spatial_data.json";
+import styled from "styled-components";
 
 export default function RedliningLayer({ map }) {
   useEffect(() => {
@@ -51,4 +52,33 @@ export default function RedliningLayer({ map }) {
       }
     };
   }, [map]);
+
+  return (
+    <>
+      <LegendContainer>
+        <h3>Residential Security Map,1939 (LEGEND)</h3>
+        <ButtonItem>A: Best</ButtonItem>
+        <ButtonItem>B: Still Desirable</ButtonItem>
+        <ButtonItem>C: Definitly Declining</ButtonItem>
+        <ButtonItem>D: Hazardous</ButtonItem>
+      </LegendContainer>
+    </>
+  );
 }
+
+const LegendContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: black;
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+`;
+
+const ButtonItem = styled.button`
+  display: flex;
+  margin-bottom: 10px;
+  cursor: pointer;
+`;
