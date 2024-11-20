@@ -3,7 +3,8 @@ import geojsonData from "../assets/geojson/Redlining_spatial_data.json";
 import styled from "styled-components";
 
 export default function RedliningLayer({ map }) {
-  const [gradeFilter, setGradeFilter] = useState(null); // displays all areas
+  const [gradeFilter, setGradeFilter] = useState([]); // array of selected grades
+
   useEffect(() => {
     if (!map) return;
 
@@ -56,29 +57,48 @@ export default function RedliningLayer({ map }) {
 
   useEffect(() => {
     if (!map || !map.getLayer("redlining-layer")) return;
-    if (gradeFilter) {
-      map.setFilter("redlining-layer", ["==", ["get", "grade"], gradeFilter]);
+
+    if (gradeFilter.length > 0) {
+      map.setFilter("redlining-layer", ["in", "grade", ...gradeFilter]);
     } else {
       map.setFilter("redlining-layer", null);
     }
   }, [map, gradeFilter]);
 
-  const handleFilter = (grade) => {
-    setGradeFilter((prev) => (prev === grade ? null : grade));
+  const toggleFilter = (grade) => {
+    setGradeFilter((prev) =>
+      prev.includes(grade) ? prev.filter((g) => g !== grade) : [...prev, grade]
+    );
   };
 
   return (
     <>
       <LegendContainer>
         <h3>Residential Security Map,1939 (LEGEND)</h3>
-        <ButtonItem onClick={() => handleFilter("A")}>A: Best</ButtonItem>
-        <ButtonItem onClick={() => handleFilter("B")}>
+        <GradeButton
+          $isActive={gradeFilter.includes("A")}
+          onClick={() => toggleFilter("A")}
+        >
+          A: Best
+        </GradeButton>
+        <GradeButton
+          $isActive={gradeFilter.includes("B")}
+          onClick={() => toggleFilter("B")}
+        >
           B: Still Desirable
-        </ButtonItem>
-        <ButtonItem onClick={() => handleFilter("C")}>
+        </GradeButton>
+        <GradeButton
+          $isActive={gradeFilter.includes("C")}
+          onClick={() => toggleFilter("C")}
+        >
           C: Definitly Declining
-        </ButtonItem>
-        <ButtonItem onClick={() => handleFilter("D")}>D: Hazardous</ButtonItem>
+        </GradeButton>
+        <GradeButton
+          $isActive={gradeFilter.includes("D")}
+          onClick={() => toggleFilter("D")}
+        >
+          D: Hazardous
+        </GradeButton>
       </LegendContainer>
     </>
   );
@@ -95,8 +115,16 @@ const LegendContainer = styled.div`
   z-index: 1000;
 `;
 
-const ButtonItem = styled.button`
+const GradeButton = styled.button`
   display: flex;
   margin-bottom: 10px;
   cursor: pointer;
+  background-color: ${(props) => (props.$isActive ? "red" : "white")};
+  color: ${(props) => (props.$isActive ? "white" : "black")};
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px 10px;
+  &:hover {
+    background-color: ${(props) => (props.$isActive ? "darkred" : "#ddd")};
+  }
 `;
