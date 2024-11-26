@@ -3,15 +3,40 @@ import geojsonData from "../assets/geojson/Redlining_spatial_data.json";
 import styled from "styled-components";
 
 const GRADES = [
-  { id: "A", label: "A: Best", color: "#76a865" },
-  { id: "B", label: "B: Still Desirable", color: "#2b49e0" },
-  { id: "C", label: "C: Definitely Declining", color: "#f2d233" },
-  { id: "D", label: "D: Hazardous", color: "#e63946" },
+  {
+    id: "A",
+    label: "A: Best",
+    color: "#76a865",
+    description:
+      "These represented the most desirable neighborhoods, predominantly inhabited by affluent white families. They were considered low-risk and highly creditworthy, receiving the most favorable lending and investment opportunities.",
+  },
+  {
+    id: "B",
+    label: "B: Still Desirable",
+    color: "#2b49e0",
+    description:
+      "These were stable, middle-class neighborhoods, often with slightly more diversity. While still seen as good investments, they were considered less ideal than green areas.",
+  },
+  {
+    id: "C",
+    label: "C: Definitely Declining",
+    color: "#f2d233",
+    description:
+      "Marked as declining or risky, these neighborhoods typically included working-class families and were often ethnically or economically mixed. They received limited financial support or investment.",
+  },
+  {
+    id: "D",
+    label: "D: Hazardous",
+    color: "#e63946",
+    description:
+      "These were labeled as `hazardous` and predominantly comprised minority populations, especially Black communities. These areas were systematically denied loans and investments, reinforcing segregation and economic inequality.",
+  },
 ];
 
 export default function RedliningLayer({ map }) {
   // State to manage the currently selected grade filters
   const [selectedGrades, setSelectedGrades] = useState([]);
+  const [descriptionDisplay, setDescriptionDisplay] = useState(false);
 
   // Function to add the GeoJSON layer to the map
   const addRedliningLayer = () => {
@@ -80,19 +105,23 @@ export default function RedliningLayer({ map }) {
           ? prev.filter((grade) => grade !== id) // Remove it from the selection
           : [...prev, id] // Otherwise, add it to the selection
     );
+    setDescriptionDisplay((prevDescription) => !prevDescription);
   };
 
   return (
     <>
       <LegendContainer>
         <h3>Residential Security Map, 1939</h3>
-        {GRADES.map(({ id, label }) => (
+        {GRADES.map(({ id, label, description }) => (
           <GradeButton
             key={id} // Unique key for each button
             $isActive={selectedGrades.includes(id)} // Determine if the button is active
             onClick={() => toggleGrade(id)} // Toggle the grade on click
           >
             {label}
+            {selectedGrades.includes(id) && descriptionDisplay && (
+              <p>{description}</p>
+            )}
           </GradeButton>
         ))}
       </LegendContainer>
