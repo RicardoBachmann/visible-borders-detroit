@@ -36,7 +36,6 @@ const GRADES = [
 export default function RedliningLayer({ map }) {
   // State to manage the currently selected grade filters
   const [selectedGrades, setSelectedGrades] = useState([]);
-  const [descriptionDisplay, setDescriptionDisplay] = useState(false);
 
   // Function to add the GeoJSON layer to the map
   const addRedliningLayer = () => {
@@ -105,7 +104,6 @@ export default function RedliningLayer({ map }) {
           ? prev.filter((grade) => grade !== id) // Remove it from the selection
           : [...prev, id] // Otherwise, add it to the selection
     );
-    setDescriptionDisplay((prevDescription) => !prevDescription);
   };
 
   return (
@@ -119,9 +117,7 @@ export default function RedliningLayer({ map }) {
             onClick={() => toggleGrade(id)} // Toggle the grade on click
           >
             {label}
-            {selectedGrades.includes(id) && descriptionDisplay && (
-              <p>{description}</p>
-            )}
+            {selectedGrades.includes(id) ? <p>{description}</p> : null}
           </GradeButton>
         ))}
       </LegendContainer>
