@@ -137,7 +137,7 @@ const LegendContainer = styled.div`
 
   // Mobile
   @media ${({ theme }) => theme.devices.mobile} {
-    background-color: aqua;
+    background-color: #025252;
   }
 
   // Tablet
