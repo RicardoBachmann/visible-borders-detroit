@@ -134,6 +134,31 @@ const LegendContainer = styled.div`
   padding: 10px;
   border-radius: 5px;
   z-index: 1000;
+
+  // Mobile
+  @media ${({ theme }) => theme.devices.mobile} {
+    background-color: aqua;
+  }
+
+  // Tablet
+  @media ${({ theme }) => theme.devices.tablet} {
+    background-color: green;
+  }
+
+  // Laptop
+  @media ${({ theme }) => theme.devices.laptop} {
+    background-color: brown;
+  }
+
+  // Desktop
+  @media ${({ theme }) => theme.devices.desktop} {
+    background-color: #d1c718;
+  }
+
+  // Large
+  @media ${({ theme }) => theme.devices.large} {
+    background-color: #ff0000;
+  }
 `;
 
 const GradeButton = styled.button`
