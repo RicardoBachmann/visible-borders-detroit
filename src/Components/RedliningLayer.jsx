@@ -128,7 +128,7 @@ export default function RedliningLayer({ map }) {
 const LegendContainer = styled.div`
   position: absolute;
   bottom: 250px;
-  right: 10px;
+  right: 15px;
   background-color: black;
   border: 1px solid red;
   padding: 10px;
