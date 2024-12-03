@@ -1,7 +1,6 @@
-/* Global styles for body, font, color scheme...*/
+import { createGlobalStyle } from "styled-components";
 
-/* Universal-Reset */
-
+export const GlobalStyles = createGlobalStyle`
 *,
 *::before,
 *::after {
@@ -40,3 +39,4 @@ body {
   bottom: 0;
   left: 0;
 }
+`;

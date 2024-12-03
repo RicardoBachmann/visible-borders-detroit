@@ -1,9 +1,10 @@
 import { useState } from "react";
-import styled from "styled-components";
+import { theme } from "../theme/theme";
+import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 
 export default function Header() {
-  const visualGuideText = "TO LEARN MORE ABOUT THE HISTORICAL PRACTICE USE";
-  const mapLayerText = "EXPLORE THE TODAYS INTERPRETATION OF";
+  const visualGuideText = "Learn the story behind this historical practice";
+  const mapLayerText = "Today's dynamic interpretation of segregation";
 
   const [navigationDescription, setNavigationDescription] =
     useState(visualGuideText);
@@ -15,19 +16,26 @@ export default function Header() {
   }
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <HeaderContainer>
         <Title>Modern-day Redlining</Title>
         <NavigationContainer>
-          <h2>{navigationDescription}</h2>
-          <NavigationButton onClick={toggleNavigationDescription}>
+          <SubTitle>{navigationDescription}</SubTitle>
+          <NavigationButton
+            onClick={toggleNavigationDescription}
+            aria-lable={
+              navigationDescription === visualGuideText
+                ? "Switch to map view"
+                : "Switch to visual guide"
+            }
+          >
             {navigationDescription === visualGuideText
               ? "VISUAL GUIDE"
               : "MAP VIEW"}
           </NavigationButton>
         </NavigationContainer>
       </HeaderContainer>
-    </>
+    </ThemeProvider>
   );
 }
 
@@ -36,10 +44,39 @@ const HeaderContainer = styled.header`
   justify-content: space-between;
   padding: 15px;
   background-color: black;
+
+  @media ${({ theme }) => theme.devices.mobile} {
+    flex-direction: row;
+  }
+
+  @media ${({ theme }) => theme.devices.tablet} {
+    flex-direction: column;
+  }
 `;
 
 const Title = styled.h1`
+  font-size: 2rem;
   color: red;
+
+  @media ${({ theme }) => theme.devices.tablet} {
+    font-size: 2.5rem;
+  }
+
+  @media ${({ theme }) => theme.devices.desktop} {
+    font-size: 3rem;
+  }
+`;
+
+const SubTitle = styled.h2`
+  font-size: 1.25rem;
+
+  @media ${({ theme }) => theme.devices.mobile} {
+    display: none;
+  }
+
+  @media ${({ theme }) => theme.devices.tablet} {
+    font-size: 1.5rem;
+  }
 `;
 
 const NavigationContainer = styled.div`
@@ -50,7 +87,8 @@ const NavigationContainer = styled.div`
 `;
 
 const NavigationButton = styled.button`
-  padding: 15px 20px;
+  width: 120px;
+  height: 50px;
   background-color: red;
   border: none;
   border-radius: 5px;
