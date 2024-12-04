@@ -68,11 +68,16 @@ export default function RedliningLayer({ map }) {
   useEffect(() => {
     if (!map) return; // Skip if the map object is not available
     // Check if the map is already loaded, then add the map
-    if (map.loaded()) {
+
+    const handleMapLoad = () => {
       addRedliningLayer();
+    };
+
+    if (map.loaded()) {
+      handleMapLoad();
     } else {
       // If the map is not loaded, wait for the "load" event to add the layer
-      map.on("load", addRedliningLayer);
+      map.on("load", handleMapLoad);
     }
 
     // Cleanup function: Remove the layer and source when the component unmounts

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import RedliningLayer from "./RedliningLayer";
 
@@ -8,7 +8,7 @@ import styled from "styled-components";
 export default function MapboxLayer() {
   const mapRef = useRef(null); // presist the map instance throuhout the lifecycle of this component
   const mapContainerRef = useRef(null); // exposes the map container and tell Mapbox where to create the map
-  const [mapInstance, setMapInstance] = useState(null); // Map status
+  const [mapInstance, setMapInstance] = useState(null);
 
   useEffect(() => {
     // Prevent reinitialization if the map already exisit
@@ -16,6 +16,7 @@ export default function MapboxLayer() {
       return;
     }
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
@@ -23,13 +24,16 @@ export default function MapboxLayer() {
       zoom: 12,
     });
 
+    // save map instance
     mapRef.current = map;
 
+    // Set map ready state once it finishes loading
     map.on("load", () => {
-      setMapInstance(true);
+      setMapInstance(map);
     });
 
     return () => {
+      // cleanup if necessary
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -39,8 +43,11 @@ export default function MapboxLayer() {
 
   return (
     <>
+      {/* Map container */}
       <MapContainer ref={mapContainerRef} />
-      {mapInstance && <RedliningLayer map={mapRef.current} />}
+
+      {/* Render RedliningLayer only when mapInstance is available */}
+      {mapInstance && <RedliningLayer map={mapInstance} />}
     </>
   );
 }

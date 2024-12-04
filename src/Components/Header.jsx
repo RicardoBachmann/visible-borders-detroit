@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { theme } from "../theme/theme";
 import styled, { ThemeProvider } from "styled-components";
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const visualGuideText = "Learn the story behind this historical practice";
   const mapLayerText = "Today's dynamic interpretation of segregation";
 
-  const [isVisualGuide, setIsVisualGuide] = useState(false);
-  const navigate = useNavigate();
+  const isVisualGuide = location.pathname === "/visual-guide"; // Checks if on the visual-guide route
 
+  // Handle the page toggle
   const toggleNavigation = () => {
-    const nextView = !isVisualGuide;
-    setIsVisualGuide(nextView);
-    navigate(nextView ? "/visual-guide" : "/");
+    navigate(isVisualGuide ? "/" : "/visual-guide");
   };
 
   return (
@@ -25,10 +25,10 @@ export default function Header() {
           <NavigationButton
             onClick={toggleNavigation}
             aria-lable={
-              isVisualGuide ? "Switch to map view" : "Switch to visual guide"
+              isVisualGuide ? "Switch to visual guide" : "Switch to map view"
             }
           >
-            {isVisualGuide ? "VISUAL GUIDE" : "MAP VIEW"}
+            {isVisualGuide ? "MAP VIEW" : "VISUAL GUIDE"}
           </NavigationButton>
         </NavigationContainer>
       </HeaderContainer>
