@@ -10,10 +10,11 @@ export default function Header() {
   const [isVisualGuide, setIsVisualGuide] = useState(false);
   const navigate = useNavigate();
 
-  function toggleNavigation() {
-    setIsVisualGuide((prev) => !prev);
-    navigate(isVisualGuide ? "/" : "/visual-guide");
-  }
+  const toggleNavigation = () => {
+    const nextView = !isVisualGuide;
+    setIsVisualGuide(nextView);
+    navigate(nextView ? "/visual-guide" : "/");
+  };
 
   return (
     <ThemeProvider theme={theme}>

@@ -6,11 +6,15 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import styled from "styled-components";
 
 export default function MapboxLayer() {
-  const mapRef = useRef(); // presist the map instance throuhout the lifecycle of this component
-  const mapContainerRef = useRef(); // exposes the map container and tell Mapbox where to create the map
+  const mapRef = useRef(null); // presist the map instance throuhout the lifecycle of this component
+  const mapContainerRef = useRef(null); // exposes the map container and tell Mapbox where to create the map
   const [mapInstance, setMapInstance] = useState(null); // Map status
 
   useEffect(() => {
+    // Prevent reinitialization if the map already exisit
+    if (mapRef.current) {
+      return;
+    }
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -19,17 +23,24 @@ export default function MapboxLayer() {
       zoom: 12,
     });
 
-    setMapInstance(map);
+    mapRef.current = map;
+
+    map.on("load", () => {
+      setMapInstance(true);
+    });
 
     return () => {
-      map.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, []);
 
   return (
     <>
       <MapContainer ref={mapContainerRef} />
-      {mapInstance && <RedliningLayer map={mapInstance} />}
+      {mapInstance && <RedliningLayer map={mapRef.current} />}
     </>
   );
 }
