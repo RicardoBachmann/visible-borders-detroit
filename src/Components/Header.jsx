@@ -1,18 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { theme } from "../theme/theme";
-import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 
 export default function Header() {
   const visualGuideText = "Learn the story behind this historical practice";
   const mapLayerText = "Today's dynamic interpretation of segregation";
 
-  const [navigationDescription, setNavigationDescription] =
-    useState(visualGuideText);
+  const [isVisualGuide, setIsVisualGuide] = useState(false);
+  const navigate = useNavigate();
 
-  function toggleNavigationDescription() {
-    setNavigationDescription((prev) =>
-      prev === visualGuideText ? mapLayerText : visualGuideText
-    );
+  function toggleNavigation() {
+    setIsVisualGuide((prev) => !prev);
+    navigate(isVisualGuide ? "/" : "/visual-guide");
   }
 
   return (
@@ -20,18 +20,14 @@ export default function Header() {
       <HeaderContainer>
         <Title>Modern-day Redlining</Title>
         <NavigationContainer>
-          <SubTitle>{navigationDescription}</SubTitle>
+          <SubTitle>{isVisualGuide ? mapLayerText : visualGuideText}</SubTitle>
           <NavigationButton
-            onClick={toggleNavigationDescription}
+            onClick={toggleNavigation}
             aria-lable={
-              navigationDescription === visualGuideText
-                ? "Switch to map view"
-                : "Switch to visual guide"
+              isVisualGuide ? "Switch to map view" : "Switch to visual guide"
             }
           >
-            {navigationDescription === visualGuideText
-              ? "VISUAL GUIDE"
-              : "MAP VIEW"}
+            {isVisualGuide ? "VISUAL GUIDE" : "MAP VIEW"}
           </NavigationButton>
         </NavigationContainer>
       </HeaderContainer>
