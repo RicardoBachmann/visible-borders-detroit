@@ -3,12 +3,22 @@ import { theme } from "../theme/theme";
 import styled, { ThemeProvider } from "styled-components";
 
 export default function Header() {
-  const location = useLocation();
+  return (
+    <>
+      <NavigationLink to="/">MAP VIEW</NavigationLink>
+      <NavigationLink to="/visual-guide">VISUAL GUIDE</NavigationLink>
+    </>
+  );
+
+  /*const location = useLocation();
 
   const visualGuideText = "Learn the story behind this historical practice";
   const mapLayerText = "Today's dynamic interpretation of segregation";
 
   const isVisualGuide = location.pathname === "/visual-guide"; // Checks if on the visual-guide route
+
+  console.log("Current Location", location.pathname);
+  console.log("Navigation Link Target:", isVisualGuide ? "/" : "/visual-guide");
 
   return (
     <ThemeProvider theme={theme}>
@@ -39,7 +49,7 @@ export default function Header() {
         </NavigationContainer>
       </HeaderContainer>
     </ThemeProvider>
-  );
+  );*/
 }
 
 const HeaderContainer = styled.header`
@@ -106,6 +116,7 @@ const NavigationText = styled.span`
 
 const NavigationLink = styled(Link)`
   text-decoration: none;
+
   width: 120px;
   height: 50px;
   background-color: red;
