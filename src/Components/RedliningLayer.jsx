@@ -37,72 +37,101 @@ export default function RedliningLayer({ map }) {
   // State to manage the currently selected grade filters
   const [selectedGrades, setSelectedGrades] = useState([]);
 
-  // Function to add the GeoJSON layer to the map
-  const addRedliningLayer = () => {
-    if (map.getSource("redlining")) return; // Do nothing if the source already exists
+  // Track if the layer has been added
+  const [layerAdded, setLayerAdded] = useState(false);
 
-    // Add GeoJSON data as a source to the map
-    map.addSource("redlining", {
-      type: "geojson",
-      data: geojsonData, // Data imported from file
-    });
-    // Add a fill layer to visualize areas on the map
-    map.addLayer({
-      id: "redlining-layer", // Unique ID for the layer
-      type: "fill", // Visualization type: Fill polygons
-      source: "redlining",
-      paint: {
-        // Set fill color based on the "grade" property
-        "fill-color": [
-          "match",
-          ["get", "grade"], // Get the "grade" property from GeoJSON data
-          ...GRADES.flatMap(({ id, color }) => [id, color]), // Map grade IDs to colors
-          "#cccccc", // Default color if no match is found
-        ],
-        "fill-opacity": 0.7,
-      },
-    });
+  /**
+   * Adds the GeoJSON source and layer to the map if not already added.
+   */
+
+  const addRedliningLayer = () => {
+    if (layerAdded || !map) return; // Function to add the GeoJSON layer to the map
+
+    if (!map.getSource("redlining")) {
+      // Add GeoJSON data as source to the map
+      map.addSource("redlining", {
+        type: "geojson",
+        data: geojsonData, // Data imported from file
+      });
+    }
+
+    if (!map.getLayer("redlining-layer")) {
+      // Add a layer to visualize redlining grades with color coding.
+      map.addLayer({
+        id: "redlining-layer", // Unique ID for the layer
+        type: "fill", // Visualization type: Fill polygons
+        source: "redlining",
+        paint: {
+          // Set fill color based on the grade property
+          "fill-color": [
+            "match",
+            ["get", "grade"], // Get the "grade" property from GeoJSON data
+            ...GRADES.flatMap(({ id, color }) => [id, color]), // Map grade IDs to colors
+            "#cccccc", // Default color if no match is found
+          ],
+          "fill-opacity": 0.7,
+        },
+      });
+    }
+    setLayerAdded(true);
   };
 
-  // 1. useEffect: Initialize the map and add the layer
+  /**
+   * Initializes the map and ensures the layer is added on load.
+   */
+
   useEffect(() => {
     if (!map) return; // Skip if the map object is not available
     // Check if the map is already loaded, then add the map
-    if (map.loaded()) {
+
+    const handleMapLoad = () => {
       addRedliningLayer();
+    };
+
+    if (map.loaded()) {
+      handleMapLoad();
     } else {
-      // If the map is not loaded, wait for the "load" event to add the layer
-      map.on("load", addRedliningLayer);
+      map.once("load", handleMapLoad); // Add the layer when the map finishes loading.
     }
 
-    // Cleanup function: Remove the layer and source when the component unmounts
+    // Cleanup: Remove the layer and source when the component unmounts
+    // Redundant ? and potential bugs and conflicts with mapbox api methods .getLayer&.removeLayer ?
     return () => {
-      if (map.getLayer("redlining-layer")) {
-        map.removeLayer("redlining-layer");
-      }
-      if (map.getSource("redlining")) {
-        map.removeSource("redlining");
+      if (map && layerAdded) {
+        if (map.getLayer("redlining-layer")) {
+          map.removeLayer("redlining-layer");
+        }
+        if (map.getSource("redlining")) {
+          map.removeSource("redlining");
+        }
+        setLayerAdded(false);
       }
     };
-  }, [map]); // Trigger this effect whenever the "map" object changes
+  }, [map]); // Effect runs whenever the map instance changes.
 
-  // 2. useEffekt: Update the map filter based on the selected grades
+  /**
+   * Updates the map filter to show only selected grades.
+   */
+
   useEffect(() => {
     if (!map || !map.getLayer("redlining-layer")) return; // Skip if the layer doesn't exist
 
     const filter = selectedGrades.length
-      ? ["in", "grade", ...selectedGrades] // Show only selected grades
-      : null; // Show all areas if no grades are selected
+      ? ["in", "grade", ...selectedGrades] // Filter by selected grades.
+      : null; // Show all grades if none are selected.
     map.setFilter("redlining-layer", filter); // Update the filter on the map layer
   }, [map, selectedGrades]); // Re-run this effect when "map" or "selectedGrades" changes
 
-  // Function to toggle the selection of grade (add/remove from "selectedGrades")
+  /**
+   * Toggles the inclusion of a grade in the selected grades filter.
+   */
+
   const toggleGrade = (id) => {
     setSelectedGrades(
       (prev) =>
         prev.includes(id) // If the grade is already selected:
-          ? prev.filter((grade) => grade !== id) // Remove it from the selection
-          : [...prev, id] // Otherwise, add it to the selection
+          ? prev.filter((grade) => grade !== id) // Remove the grade if it's already selected
+          : [...prev, id] // Add the grade if it's not selected
     );
   };
 
@@ -128,7 +157,7 @@ export default function RedliningLayer({ map }) {
 const LegendContainer = styled.div`
   position: absolute;
   bottom: 250px;
-  right: 10px;
+  right: 15px;
   background-color: black;
   border: 1px solid red;
   padding: 10px;
