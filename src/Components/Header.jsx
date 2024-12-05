@@ -1,9 +1,8 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { theme } from "../theme/theme";
 import styled, { ThemeProvider } from "styled-components";
 
 export default function Header() {
-  const navigate = useNavigate();
   const location = useLocation();
 
   const visualGuideText = "Learn the story behind this historical practice";
@@ -11,25 +10,32 @@ export default function Header() {
 
   const isVisualGuide = location.pathname === "/visual-guide"; // Checks if on the visual-guide route
 
-  // Handle the page toggle
-  const toggleNavigation = () => {
-    navigate(isVisualGuide ? "/" : "/visual-guide");
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <HeaderContainer>
         <Title>Modern-day Redlining</Title>
         <NavigationContainer>
-          <SubTitle>{isVisualGuide ? mapLayerText : visualGuideText}</SubTitle>
-          <NavigationButton
-            onClick={toggleNavigation}
-            aria-lable={
-              isVisualGuide ? "Switch to visual guide" : "Switch to map view"
-            }
-          >
-            {isVisualGuide ? "MAP VIEW" : "VISUAL GUIDE"}
-          </NavigationButton>
+          <nav>
+            <ul>
+              <li>
+                <NavigationText>
+                  {isVisualGuide ? mapLayerText : visualGuideText}
+                </NavigationText>
+              </li>
+              <li>
+                <NavigationLink
+                  to={isVisualGuide ? "/" : "/visual-guide"}
+                  aria-lable={
+                    isVisualGuide
+                      ? "Switch to visual guide"
+                      : "Switch to map view"
+                  }
+                >
+                  {isVisualGuide ? "MAP VIEW" : "VISUAL GUIDE"}
+                </NavigationLink>
+              </li>
+            </ul>
+          </nav>
         </NavigationContainer>
       </HeaderContainer>
     </ThemeProvider>
@@ -77,13 +83,29 @@ const SubTitle = styled.h2`
 `;
 
 const NavigationContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background-color: black;
+  margin-top: 1rem;
+  width: 100%;
+  nav {
+    ul {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 10px;
+      padding: 0;
+    }
+    li {
+      margin: 0 1 rem;
+    }
+  }
 `;
 
-const NavigationButton = styled.button`
+const NavigationText = styled.span`
+  font-size: 1rem;
+  color: white;
+`;
+
+const NavigationLink = styled(Link)`
+  text-decoration: none;
   width: 120px;
   height: 50px;
   background-color: red;
