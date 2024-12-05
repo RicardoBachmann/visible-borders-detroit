@@ -37,31 +37,39 @@ export default function RedliningLayer({ map }) {
   // State to manage the currently selected grade filters
   const [selectedGrades, setSelectedGrades] = useState([]);
 
+  const [layerAdded, setLayerAdded] = useState(false);
+
   // Function to add the GeoJSON layer to the map
   const addRedliningLayer = () => {
-    if (map.getSource("redlining")) return; // Do nothing if the source already exists
+    if (layerAdded || !map) return;
 
     // Add GeoJSON data as a source to the map
-    map.addSource("redlining", {
-      type: "geojson",
-      data: geojsonData, // Data imported from file
-    });
+    if (!map.getSource("redlining")) {
+      map.addSource("redlining", {
+        type: "geojson",
+        data: geojsonData, // Data imported from file
+      });
+    }
+
     // Add a fill layer to visualize areas on the map
-    map.addLayer({
-      id: "redlining-layer", // Unique ID for the layer
-      type: "fill", // Visualization type: Fill polygons
-      source: "redlining",
-      paint: {
-        // Set fill color based on the "grade" property
-        "fill-color": [
-          "match",
-          ["get", "grade"], // Get the "grade" property from GeoJSON data
-          ...GRADES.flatMap(({ id, color }) => [id, color]), // Map grade IDs to colors
-          "#cccccc", // Default color if no match is found
-        ],
-        "fill-opacity": 0.7,
-      },
-    });
+    if (!map.getLayer("redlining-layer")) {
+      map.addLayer({
+        id: "redlining-layer", // Unique ID for the layer
+        type: "fill", // Visualization type: Fill polygons
+        source: "redlining",
+        paint: {
+          // Set fill color based on the "grade" property
+          "fill-color": [
+            "match",
+            ["get", "grade"], // Get the "grade" property from GeoJSON data
+            ...GRADES.flatMap(({ id, color }) => [id, color]), // Map grade IDs to colors
+            "#cccccc", // Default color if no match is found
+          ],
+          "fill-opacity": 0.7,
+        },
+      });
+    }
+    setLayerAdded(true);
   };
 
   // 1. useEffect: Initialize the map and add the layer
@@ -77,16 +85,19 @@ export default function RedliningLayer({ map }) {
       handleMapLoad();
     } else {
       // If the map is not loaded, wait for the "load" event to add the layer
-      map.on("load", handleMapLoad);
+      map.once("load", handleMapLoad);
     }
 
     // Cleanup function: Remove the layer and source when the component unmounts
     return () => {
-      if (map.getLayer("redlining-layer")) {
-        map.removeLayer("redlining-layer");
-      }
-      if (map.getSource("redlining")) {
-        map.removeSource("redlining");
+      if (map && layerAdded) {
+        if (map.getLayer("redlining-layer")) {
+          map.removeLayer("redlining-layer");
+        }
+        if (map.getSource("redlining")) {
+          map.removeSource("redlining");
+        }
+        setLayerAdded(false);
       }
     };
   }, [map]); // Trigger this effect whenever the "map" object changes

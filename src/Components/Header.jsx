@@ -3,14 +3,7 @@ import { theme } from "../theme/theme";
 import styled, { ThemeProvider } from "styled-components";
 
 export default function Header() {
-  return (
-    <>
-      <NavigationLink to="/">MAP VIEW</NavigationLink>
-      <NavigationLink to="/visual-guide">VISUAL GUIDE</NavigationLink>
-    </>
-  );
-
-  /*const location = useLocation();
+  const location = useLocation();
 
   const visualGuideText = "Learn the story behind this historical practice";
   const mapLayerText = "Today's dynamic interpretation of segregation";
@@ -49,7 +42,7 @@ export default function Header() {
         </NavigationContainer>
       </HeaderContainer>
     </ThemeProvider>
-  );*/
+  );
 }
 
 const HeaderContainer = styled.header`
